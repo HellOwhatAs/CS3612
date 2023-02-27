@@ -18,4 +18,4 @@ $$p_i=\frac{e^{X_i^\top\beta}}{1+e^{X_i^\top\beta}}=\frac{1}{1+e^{-X_i^\top\beta
 
 The reasons of gradient should be computed on $\log\text{Pr}\left(\beta\right)$, not on $\text{Pr}\left(\beta\right)$:
 1. Converting cumulative multiplication into cumulative addition($\prod \to \sum$) makes calculating gradients easier.
-2. Cumulative multiplication($\prod$) of many decimals between zero and one will cause the result to converge to zero, while cumulative addition($\sum$) will not.
+2. Cumulative multiplication($\prod$) of many decimals between zero and one will cause the result to converge to zero and `float` type with finite precision will cause loss of precision problem, while cumulative addition($\sum$) will not.
