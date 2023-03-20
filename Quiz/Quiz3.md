@@ -2,7 +2,7 @@
 least square regression: $$\lVert Y-X^\top\beta \rVert^2$$
 ridge regression: $$\lVert Y-X^\top\beta \rVert^2 + \lambda{\lVert\beta\rVert}_2^2$$
 kernel regression: $$\lVert Y-Kc \rVert^2 + \lambda c^\top K c$$
-LASSO regression: $$\lVert Y-X^\top\beta \rVert^2 + \lambda\lvert\beta\rvert _1$$
+LASSO regression: $$\frac{1}{2}\lVert Y-X^\top\beta \rVert^2 + \lambda\lvert\beta\rvert _1$$
 
 2. **Please write analytic solutions to the least square regression, the ridge regression, the kernel regression, and the spline regression. (不用写证明过程)**
 least square regression: $$\beta = \left(X^\top X\right)^{-1}X^\top Y$$
