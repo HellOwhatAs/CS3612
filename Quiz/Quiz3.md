@@ -19,8 +19,8 @@ $$\begin{aligned}
     & \sigma_\text{within}^2 = n_\text{pos}\sigma_\text{pos}^2 + n_\text{neg}\sigma_\text{neg}^2\\
     & n_\text{pos} = \lvert\Omega^+\rvert\\
     & n_\text{neg} = \lvert\Omega^-\rvert\\
-    & \sigma_\text{pos} = \beta^\top \Sigma^+\beta\\
-    & \sigma_\text{neg} = \beta^\top \Sigma^-\beta
+    & \sigma_\text{pos}^2 = \beta^\top \Sigma^+\beta\\
+    & \sigma_\text{neg}^2 = \beta^\top \Sigma^-\beta
 \end{aligned}$$
 
 $$\begin{aligned}
