@@ -7,31 +7,73 @@ X_train, X_test, Y_train, Y_test = get_data("./dataset/forestfires.csv")
 ######################## Implement you code here #######################
 ########################################################################
 import numpy as np
+
 np.random.seed(0)
+"""set random seed 0"""
+
 X_train, X_test, Y_train, Y_test = X_train, X_test, Y_train.reshape(-1, 1), Y_test.reshape(-1, 1)
+"""consistent with lecture"""
 
 lr = 1e-4
+"""learning rate"""
 N = 100000
+"""iterations"""
 
-def Q1():
+def Task1():
+    """
+    Gradient descent on linear model.
+    """
     beta = np.random.random((X_train.shape[1], 1))
     for _ in range(N):
         grad = -2 * X_train.T @ (Y_train - X_train @ beta)
         grad /= np.abs(grad.sum())
         beta -= lr * grad
     loss = np.sum((Y_test - X_test @ beta) ** 2)
-    print(f"\nTask1:\nbeta = {beta.flatten()}\nloss = {loss}\n")
+    print(f"\nTask(1):\nbeta = {beta.flatten()}\nloss = {loss}\n")
     return beta
-# Q1()
+# Task1()
 
-def Q2(lmd):
+def Task2(lmd):
+    """
+    ridge regression. 
+    """
+    beta = np.linalg.inv(X_train.T @ X_train + lmd * np.eye(X_train.shape[1])) @ X_train.T @ Y_train
+    loss = np.sum((Y_test - X_test @ beta) ** 2)
+    print(f"\nTask(2) with lmd = {lmd}:\nbeta = {beta.flatten()}\nloss = {loss}\n")
+    return beta
+# Task2(lmd = 0.5)
+# Task2(lmd = 1)
+# Task2(lmd = 100000)
+
+def Task3(lmd, gamma):
+    """
+    RBF kernel regression. 
+    """
+    K = np.exp( - np.sum((X_train[:, np.newaxis] - X_train) ** 2, axis=2) / (2 * gamma **2))
+    c = np.linalg.inv(K + lmd * np.eye(K.shape[0])) @ Y_train
+    K_test = np.exp( - np.sum((X_test[:, np.newaxis] - X_train) ** 2, axis=2) / (2 * gamma **2))
+    Y_pred = K_test @ c
+    loss = np.sum((Y_test - Y_pred) ** 2)
+    print(f"\nTask(3) with lmd = {lmd}, gamma = {gamma}:\nc = {c.flatten()}\nloss = {loss}\n")
+    return c
+# Task3(0.5, 10 ** 5)
+# Task3(10, 10 ** 5)
+
+def Task4():
+    """
+    Spline regression.
+    """
+
+def Task5(lmd):
+    """
+    Lasso regression.
+    """
     beta = np.random.random((X_train.shape[1], 1))
     for _ in range(N):
-        grad = 2 * lmd * beta - 2 * X_train.T @ (Y_train - X_train @ beta)
+        grad = lmd * np.sign(beta) - X_train.T @ (Y_train - X_train @ beta)
         grad /= np.abs(grad.sum())
         beta -= lr * grad
-    loss = np.sum((Y_test - X_test @ beta) ** 2) + lmd * np.sum(beta ** 2)
-    print(f"\nTask2 with lmd = {lmd}:\nbeta = {beta.flatten()}\nloss = {loss}\n")
+    loss = np.sum((Y_test - X_test @ beta) ** 2)
+    print(f"\nTask(5) with lmd = {lmd}:\nbeta = {beta.flatten()}\nloss = {loss}\n")
     return beta
-# Q2(lmd = 0.5)
-# Q2(lmd = 1)
+# Task5(100)
