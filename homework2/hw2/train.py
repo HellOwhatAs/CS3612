@@ -35,7 +35,7 @@ def Task1():
 
 def Task2(lmd):
     """
-    ridge regression. 
+    Ridge regression.
     """
     beta = np.linalg.inv(X_train.T @ X_train + lmd * np.eye(X_train.shape[1])) @ X_train.T @ Y_train
     loss = np.sum((Y_test - X_test @ beta) ** 2)
