@@ -9,20 +9,11 @@ X_train, X_test, Y_train, Y_test = get_data("./dataset/forestfires.csv")
 import numpy as np
 
 np.random.seed(0)
-"""set random seed 0"""
-
 X_train, X_test, Y_train, Y_test = X_train, X_test, Y_train.reshape(-1, 1), Y_test.reshape(-1, 1)
-"""consistent with lecture"""
-
 lr = 1e-4
-"""learning rate"""
 N = 100000
-"""iterations"""
 
 def Task1():
-    """
-    Gradient descent on linear model.
-    """
     beta = np.random.random((X_train.shape[1], 1))
     for _ in range(N):
         grad = -2 * X_train.T @ (Y_train - X_train @ beta)
@@ -34,9 +25,6 @@ def Task1():
 # Task1()
 
 def Task2(lmd):
-    """
-    Ridge regression.
-    """
     beta = np.linalg.inv(X_train.T @ X_train + lmd * np.eye(X_train.shape[1])) @ X_train.T @ Y_train
     loss = np.sum((Y_test - X_test @ beta) ** 2)
     print(f"\nTask(2) with lmd = {lmd}:\nbeta = {beta.flatten()}\nloss = {loss}\n")
@@ -46,9 +34,6 @@ def Task2(lmd):
 # Task2(lmd = 100000)
 
 def Task3(lmd, gamma):
-    """
-    RBF kernel regression. 
-    """
     K = np.exp( - np.sum((X_train[:, np.newaxis] - X_train) ** 2, axis=2) / (2 * gamma **2))
     c = np.linalg.inv(K + lmd * np.eye(K.shape[0])) @ Y_train
     K_test = np.exp( - np.sum((X_test[:, np.newaxis] - X_train) ** 2, axis=2) / (2 * gamma **2))
@@ -65,9 +50,6 @@ def Task4():
     """
 
 def Task5(lmd):
-    """
-    Lasso regression.
-    """
     beta = np.random.random((X_train.shape[1], 1))
     for _ in range(N):
         grad = lmd * np.sign(beta) - X_train.T @ (Y_train - X_train @ beta)
