@@ -1,3 +1,6 @@
+<center><h2>Homework 2</h2></center>
+<div align=right>520030910246 薛家奇</div>
+
 ### Task(1) Find a linear model to solve the regression problem.
 The MSE loss can be written as:
 $$
@@ -31,7 +34,7 @@ And the visualization of the weight vector $\beta$ is:
 ### Task(2) Using Ridge Regression to solve the regression problem.
 The loss can be written as:
 $$
-L(\beta) = {\lVert Y - X\beta\rVert}_2^2 + \lambda \lVert \beta \rVert_2^2
+L(\beta) = {\lVert Y - X\beta\rVert}_2^2 + \lambda \lVert \beta \rVert _2^2
 $$
 The gradient can be written as:
 $$\begin{aligned}
@@ -203,3 +206,5 @@ best_loss = 156.82043402173144
 We can see that the best $\lambda = 2000$.
 And the visualization of the weight vector $\beta$ is:
 ![](./hw2/assets/task5.svg)
+
+### Conclusion analysis
