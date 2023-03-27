@@ -31,6 +31,8 @@ loss = 190.52631008965514
 ```
 And the visualization of the weight vector $\beta$ is: 
 ![](./hw2/assets/task1.svg)
+It can be seen from the figure above that 2 of elements in $\beta$ plays a giant positive role. While other $\beta_i$ are relatively small.
+
 ### Task(2) Using Ridge Regression to solve the regression problem.
 The loss can be written as:
 $$
@@ -68,6 +70,9 @@ best_loss = 168.967456043671
 When $\lambda = 10^5$, the loss is minimul.
 And the visualization of the weight vector $\beta$ is:
 ![](./hw2/assets/task2.svg)
+It can be seen from the figure above that as $\lambda$ goes higher, $\beta_i$ goes smaller.
+And all $\beta_i$ is a lot less than the result in Task(1). This shows that using Ridge Regression can prevent $\beta_i$ becoming too large. And the loss is also smaller than the loss in Task(1), which shows that Ridge Regression can prevent over-fitting.
+However, when $\lambda$ goes too high, the loss becomes larger because if $\beta_i$ is too small, it cannot represent enough feature to predict the value of $Y$.
 ### Task(3) Using RBF kernel regression to solve the regression problem.
 The loss can be written as:
 $$
@@ -168,6 +173,10 @@ Case $c$ is too long, I won't put it in this report. $c$ can be obtained via exe
 We can see that the best $\lambda = 0.5$.
 And the visualization of the weight vector $c$ is:
 ![](./hw2/assets/task3.svg)
+It can be seen from the figure above that as $\lambda$ goes higher, $c_i$ goes smaller.
+And the loss is much smaller than other linar model. Because kernal function of higher dimension have a better capacity to represent the feature.
+
+
 ### Task(4) Using Spline Regression to solve the regression problem.
 ```text
 Task(4):
@@ -206,5 +215,4 @@ best_loss = 156.82043402173144
 We can see that the best $\lambda = 2000$.
 And the visualization of the weight vector $\beta$ is:
 ![](./hw2/assets/task5.svg)
-
-### Conclusion analysis
+It can be seen from the figure above that most of the $\beta_i$ is zero compared with the result in Task(2). This shows that compared with ridge regression, lasso regression produce sparse solutions, making some of the unimportant feature coefficients zero to simplify the model and improving generalization performance.
