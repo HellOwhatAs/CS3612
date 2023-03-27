@@ -100,7 +100,7 @@ if __name__ == '__main__':
             )
         print(f"\nbest_c = {best_beta.flatten()}\nbest_loss = {min_loss}\n")
         plt.legend()
-        plt.title("sorted $\\beta_i$ of Task(3) with $\\sigma = 10^5$")
+        plt.title("sorted $c_i$ of Task(3) with $\\sigma = 10^5$")
         plt.savefig("./assets/task3.svg")
 
     if task4:
