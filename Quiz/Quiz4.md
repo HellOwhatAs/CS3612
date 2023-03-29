@@ -20,4 +20,19 @@
    即为Ridge regression的解
 
 2. **请证明Section 1.8所介绍的Bayesian regression，即如何从一些对beta和epsilon的先验假设，证明出ridge regrssion的loss形式（具体证明过程写在了Page 15中的框内）。**
-   
+   $$
+   \beta \sim N\left(0, \tau^2I_p\right)\\
+   Y-X\beta = \epsilon \sim N\left(0, \sigma^2I_n\right)
+   $$
+   $$
+   \begin{aligned}
+      p\left(\beta|Y, X\right) &\propto p\left(\beta\right) p\left(Y|X, \beta\right)\\
+      &\propto \exp\left(-\frac{1}{2\tau^2}\lvert\beta\rvert^2\right) \exp\left(-\frac{1}{2\sigma^2}\lvert Y -X\beta \rvert^2\right)\\
+      &= \exp\left(-\frac{1}{2}\left[\frac{1}{\sigma^2}\lvert Y-X\beta \rvert^2 +\frac{1}{\tau^2}\lvert \beta \rvert^2\right]\right)\\
+      &= \exp\left(-\frac{1}{2\sigma^2}\left[\lvert Y-X\beta \rvert^2 +\lambda\lvert \beta \rvert^2\right]\right)\\
+   \end{aligned}
+   $$
+   其中
+   $$
+   \lambda = \frac{\sigma^2}{\tau^2}
+   $$
