@@ -53,7 +53,7 @@ class MyNet(nn.Module):
         x = self.fc3(x)
         return x
     
-def train_and_test(netclass: type, *,epochs: int = 200):
+def train_and_test(netclass: type, trainloader: torch.utils.data.DataLoader, testloader: torch.utils.data.DataLoader, device,* ,epochs: int = 200):
     net = netclass().to(device)
 
     criterion = nn.CrossEntropyLoss()
@@ -110,13 +110,12 @@ if __name__ == '__main__':
     ########################################################################
 
     batch_size = 32
-    
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-
     trainloader = torch.utils.data.DataLoader(list(zip(torch.from_numpy(X_train).to(device), torch.from_numpy(Y_train).to(device))), batch_size=batch_size,
                                             shuffle=True)
-
     testloader = torch.utils.data.DataLoader(list(zip(torch.from_numpy(X_test).to(device), torch.from_numpy(Y_test).to(device))), batch_size=batch_size,
                                             shuffle=False)
     
-    print(train_and_test(LeNet)[1], train_and_test(MyNet)[1])
+    lenet, leacc = train_and_test(LeNet, trainloader, testloader, device)
+    mynet, myacc = train_and_test(MyNet, trainloader, testloader, device)
+    print(leacc, myacc)
