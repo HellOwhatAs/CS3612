@@ -8,8 +8,17 @@ import torch.utils.data
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+from typing import Callable, Union, Tuple
+from collections import defaultdict
 
 from matplotlib import pyplot as plt
+
+class callback:
+    def __init__(self, func = (lambda self, a, b: (self.data['train'].append(a), self.data['test'].append(b)))):
+        self.func = func
+        self.data = defaultdict(list)
+    def __call__(self, *args):
+        return self.func(self, *args)
 
 class LeNet(nn.Module):
     def __init__(self):
@@ -53,7 +62,41 @@ class MyNet(nn.Module):
         x = self.fc3(x)
         return x
     
-def train_and_test(netclass: type, trainloader: torch.utils.data.DataLoader, testloader: torch.utils.data.DataLoader, device,* ,epochs: int = 200):
+def calc_acc(net: nn.Module, dataloader: torch.utils.data.DataLoader) -> float:
+    correct = 0
+    total = 0
+    with torch.no_grad():
+        for images, labels in dataloader:
+            outputs = net(images)
+            _, predicted = torch.max(outputs.data, 1)
+            total += labels.size(0)
+            correct += (predicted == labels).sum().item()
+    return correct / total
+
+def calc_test(net: nn.Module, testloader: torch.utils.data.DataLoader, criterion: nn.CrossEntropyLoss) -> Tuple[float, float]:
+    '''
+    Return: test_loss, test_acc
+    '''
+    running_loss = 0.0
+
+    correct = 0
+    total = 0
+
+    with torch.no_grad():
+        for images, labels in testloader:
+            outputs = net(images)
+
+            _, predicted = torch.max(outputs.data, 1)
+            total += labels.size(0)
+            correct += (predicted == labels).sum().item()
+
+            loss = criterion(outputs, labels)
+            running_loss += loss.item()
+    return running_loss / len(testloader), correct / total
+
+def train_and_test(netclass: type, trainloader: torch.utils.data.DataLoader, testloader: torch.utils.data.DataLoader, device,* ,epochs: int = 200,
+                   loss_callback: Union[None, Callable[[float, float], None]] = None,
+                   acc_callback: Union[None, Callable[[float, float], None]] = None):
     net = netclass().to(device)
 
     criterion = nn.CrossEntropyLoss()
@@ -73,23 +116,16 @@ def train_and_test(netclass: type, trainloader: torch.utils.data.DataLoader, tes
 
                 running_loss += loss.item()
 
-            tbar.set_postfix(loss = running_loss / len(trainloader))
+            train_loss = running_loss / len(trainloader)
+            test_loss, test_acc = calc_test(net, testloader, criterion)
+            if loss_callback: loss_callback(train_loss, test_loss)
+            if acc_callback: acc_callback(calc_acc(net, trainloader), test_acc)
+
+            tbar.set_postfix(train_loss = train_loss, test_loss = test_loss)
             tbar.update()
             running_loss = 0.0
 
-    correct = 0
-    total = 0
-    with torch.no_grad():
-        for data in testloader:
-            images, labels = data
-
-            outputs = net(images)
-
-            _, predicted = torch.max(outputs.data, 1)
-            total += labels.size(0)
-            correct += (predicted == labels).sum().item()
-
-    return net, correct / total
+    return net
 
 if __name__ == '__main__':
     ######################## Get train/test dataset ########################
@@ -116,6 +152,28 @@ if __name__ == '__main__':
     testloader = torch.utils.data.DataLoader(list(zip(torch.from_numpy(X_test).to(device), torch.from_numpy(Y_test).to(device))), batch_size=batch_size,
                                             shuffle=False)
     
-    lenet, leacc = train_and_test(LeNet, trainloader, testloader, device)
-    mynet, myacc = train_and_test(MyNet, trainloader, testloader, device)
-    print(leacc, myacc)
+    le_loss_cb, le_acc_cb, my_loss_cb, my_acc_cb = [callback() for _ in range(4)]
+    lenet = train_and_test(LeNet, trainloader, testloader, device, acc_callback = le_acc_cb, loss_callback = le_loss_cb)
+    mynet = train_and_test(MyNet, trainloader, testloader, device, acc_callback = my_acc_cb, loss_callback = my_loss_cb)
+
+    plt.figure()
+    plt.title('le')
+    plt.plot(le_loss_cb.data['train'])
+    plt.plot(le_loss_cb.data['test'])
+
+    plt.figure()
+    plt.title('le')
+    plt.plot(le_acc_cb.data['train'])
+    plt.plot(le_acc_cb.data['test'])
+
+    plt.figure()
+    plt.title('my')
+    plt.plot(my_loss_cb.data['train'])
+    plt.plot(my_loss_cb.data['test'])
+
+    plt.figure()
+    plt.title('my')
+    plt.plot(my_acc_cb.data['train'])
+    plt.plot(my_acc_cb.data['test'])
+
+    plt.show()
