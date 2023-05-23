@@ -8,17 +8,23 @@ import torch.utils.data
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from typing import Callable, Union, Tuple
+from typing import Callable, Union, Tuple, Any
 from collections import defaultdict
 
 from matplotlib import pyplot as plt
 
 class callback:
-    def __init__(self, func = (lambda self, a, b: (self.data['train'].append(a), self.data['test'].append(b)))):
+    def __init__(self, func: Callable[['callback', Any], None]):
         self.func = func
         self.data = defaultdict(list)
     def __call__(self, *args):
         return self.func(self, *args)
+    def __getitem__(self, *args):
+        return self.data.__getitem__(*args)
+    def __delitem__(self, *args):
+        self.data.__delitem__(*args)
+    def clear(self):
+        self.data.clear()
 
 class LeNet(nn.Module):
     def __init__(self):
@@ -152,28 +158,28 @@ if __name__ == '__main__':
     testloader = torch.utils.data.DataLoader(list(zip(torch.from_numpy(X_test).to(device), torch.from_numpy(Y_test).to(device))), batch_size=batch_size,
                                             shuffle=False)
     
-    le_loss_cb, le_acc_cb, my_loss_cb, my_acc_cb = [callback() for _ in range(4)]
+    le_loss_cb, le_acc_cb, my_loss_cb, my_acc_cb = [callback(lambda self, a, b: (self['train'].append(a), self['test'].append(b))) for _ in range(4)]
     lenet = train_and_test(LeNet, trainloader, testloader, device, acc_callback = le_acc_cb, loss_callback = le_loss_cb)
     mynet = train_and_test(MyNet, trainloader, testloader, device, acc_callback = my_acc_cb, loss_callback = my_loss_cb)
 
     plt.figure()
     plt.title('le')
-    plt.plot(le_loss_cb.data['train'])
-    plt.plot(le_loss_cb.data['test'])
+    plt.plot(le_loss_cb['train'])
+    plt.plot(le_loss_cb['test'])
 
     plt.figure()
     plt.title('le')
-    plt.plot(le_acc_cb.data['train'])
-    plt.plot(le_acc_cb.data['test'])
+    plt.plot(le_acc_cb['train'])
+    plt.plot(le_acc_cb['test'])
 
     plt.figure()
     plt.title('my')
-    plt.plot(my_loss_cb.data['train'])
-    plt.plot(my_loss_cb.data['test'])
+    plt.plot(my_loss_cb['train'])
+    plt.plot(my_loss_cb['test'])
 
     plt.figure()
     plt.title('my')
-    plt.plot(my_acc_cb.data['train'])
-    plt.plot(my_acc_cb.data['test'])
+    plt.plot(my_acc_cb['train'])
+    plt.plot(my_acc_cb['test'])
 
     plt.show()
