@@ -35,10 +35,17 @@ if __name__ == '__main__':
     from dataset import get_data
     from cnns import LeNet, MyNet
     X_train, X_test, Y_train, Y_test = get_data('dataset')
-    lenet = torch.load('lenet.pth')
-    mynet = torch.load('mynet.pth')
+    lenet: LeNet = torch.load('lenet.pth')
+    mynet: MyNet = torch.load('mynet.pth')
+
+    X_in = torch.from_numpy(X_test).to(next(lenet.parameters()).device)
+    images = np.squeeze(X_test * 255)
 
     with torch.no_grad():
-        out = lenet(torch.from_numpy(X_test).to(next(lenet.parameters()).device))
-    pos = pca(out).cpu().numpy()
-    images2svg("pca_lenet_final.svg", np.squeeze(X_test * 255), pos).save(pretty=True)
+        conv1_out = lenet.pool(torch.nn.functional.relu(lenet.conv1(X_in)))
+        fc1 = torch.nn.functional.relu(lenet.fc1(torch.flatten(lenet.pool(torch.nn.functional.relu(lenet.conv2(conv1_out))), 1)))
+        final = lenet.fc3(torch.nn.functional.relu(lenet.fc2(fc1)))
+
+    images2svg("./assets/pca_lenet_conv.svg", images, pca(torch.flatten(conv1_out, 1)).cpu().numpy()).save(pretty=True)
+    images2svg("./assets/pca_lenet_fc.svg", images, pca(fc1).cpu().numpy()).save(pretty=True)
+    images2svg("./assets/pca_lenet_final.svg", images, pca(final).cpu().numpy()).save(pretty=True)
