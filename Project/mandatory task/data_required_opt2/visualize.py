@@ -119,3 +119,20 @@ if __name__ == '__main__':
     images2svg("./assets/tsne_lenet_conv.svg", images, tsne(conv1_out).cpu().numpy()).save(pretty=True)
     images2svg("./assets/tsne_lenet_fc.svg", images, tsne(fc1).cpu().numpy()).save(pretty=True)
     images2svg("./assets/tsne_lenet_final.svg", images, tsne(final).cpu().numpy()).save(pretty=True)
+
+    with torch.no_grad():
+        conv1_out = mynet.pool(torch.nn.functional.relu(mynet.conv1(X_in)))
+        conv2_out = mynet.pool(torch.nn.functional.relu(mynet.conv2(conv1_out)))
+        conv3_out = mynet.pool(torch.nn.functional.relu(mynet.conv3(conv2_out)))
+        fc1 = torch.nn.functional.relu(mynet.fc1(torch.flatten(conv3_out, 1)))
+        fc2 = torch.nn.functional.relu(mynet.fc2(fc1))
+        final = mynet.fc3(fc2)
+    conv3_out = torch.flatten(conv3_out, 1)
+
+    images2svg("./assets/pca_mynet_conv.svg", images, pca(conv3_out).cpu().numpy()).save(pretty=True)
+    images2svg("./assets/pca_mynet_fc.svg", images, pca(fc2).cpu().numpy()).save(pretty=True)
+    images2svg("./assets/pca_mynet_final.svg", images, pca(final).cpu().numpy()).save(pretty=True)
+
+    images2svg("./assets/tsne_mynet_conv.svg", images, tsne(conv3_out).cpu().numpy()).save(pretty=True)
+    images2svg("./assets/tsne_mynet_fc.svg", images, tsne(fc2).cpu().numpy()).save(pretty=True)
+    images2svg("./assets/tsne_mynet_final.svg", images, tsne(final).cpu().numpy()).save(pretty=True)
