@@ -39,6 +39,9 @@ if __name__ == '__main__':
     lenet = train_and_test(LeNet, trainloader, testloader, device, acc_callback = le_acc_cb, loss_callback = le_loss_cb)
     mynet = train_and_test(MyNet, trainloader, testloader, device, acc_callback = my_acc_cb, loss_callback = my_loss_cb)
 
+    torch.save(lenet, 'lenet.pth')
+    torch.save(mynet, 'mynet.pth')
+
     plt.figure()
     plt.title('le')
     plt.plot(le_loss_cb['train'])
