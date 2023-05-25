@@ -1,5 +1,7 @@
 import svgwrite, numpy as np, cv2, base64, torch
 from tqdm import tqdm
+import matplotlib.pyplot as plt
+plt.style.use('ggplot')
 
 def images2svg(svg_filename: str, images: np.ndarray, pos: np.ndarray, *, width_pixels: int = 1600, imsize: float = 0.02):
     height_pixels = round(width_pixels * (pos[:, 1].max() - pos[:, 1].min()) / (pos[:, 0].max() - pos[:, 0].min()))
@@ -13,7 +15,7 @@ def images2svg(svg_filename: str, images: np.ndarray, pos: np.ndarray, *, width_
         dwg.add(
             dwg.image(
                 'data:image/png;base64,' + base64.b64encode(cv2.imencode('.png', np.uint8(image))[1]).decode('utf-8'),
-                insert = (f"{x * (1 - imsize) * 100}%", f"{y * (1 - imsize) * 100}%"),
+                insert = (f"{x * (1 - imsize) * 100}%", f"{(1 - y) * (1 - imsize) * 100}%"),
                 size = (f"{imsize * 100}%", ) * 2
             )
         )
@@ -61,7 +63,7 @@ def calc_prob(X: torch.Tensor, eps: float = 1e-5, perplexity: float = 30.0, max_
         ret[i, [j for j in range(n) if j != i]] = P
     return ret
 
-def tsne(X: torch.Tensor, num_dims: int = 2, *, initial_dims: int = 50, max_iter: int = 300, perplexity: float = 20.0,
+def tsne(X: torch.Tensor, num_dims: int = 2, *, initial_dims: int = 50, max_iter: int = 1000, perplexity: float = 20.0,
         eps: float = 1e-5, gain_min: float = 0.01, float_min: float = 1e-12):
     device = X.device
     n = X.shape[0]
@@ -79,6 +81,7 @@ def tsne(X: torch.Tensor, num_dims: int = 2, *, initial_dims: int = 50, max_iter
             n_num = num / torch.sum(num)
             n_num = torch.max(n_num, torch.tensor(float_min))
             diff = prob - n_num
+            if iter == 100: prob /= 4
             for i in range(n):
                 diff_num_product = (diff[:, i] * num[:, i]).repeat(num_dims, 1).t()
                 diff_y_product = diff_num_product * (ret[i, :] - ret)
@@ -92,7 +95,6 @@ def tsne(X: torch.Tensor, num_dims: int = 2, *, initial_dims: int = 50, max_iter
             ret += iY - torch.mean(ret + iY, 0)
             tbar.set_postfix(error = torch.sum(prob * torch.log(prob / n_num)).item())
             tbar.update()
-            if iter == 100: prob /= 4
     return ret
 
 if __name__ == '__main__':
@@ -112,13 +114,41 @@ if __name__ == '__main__':
         final = lenet.fc3(torch.nn.functional.relu(lenet.fc2(fc1)))
     conv1_out = torch.flatten(conv1_out, 1)
 
-    images2svg("./assets/pca_lenet_conv.svg", images, pca(conv1_out).cpu().numpy()).save(pretty=True)
-    images2svg("./assets/pca_lenet_fc.svg", images, pca(fc1).cpu().numpy()).save(pretty=True)
-    images2svg("./assets/pca_lenet_final.svg", images, pca(final).cpu().numpy()).save(pretty=True)
+    pos = pca(conv1_out).cpu().numpy()
+    images2svg("./assets/pca_lenet_conv.svg", images, pos).save(pretty=True)
+    plt.scatter(pos[:, 0], pos[:, 1], c = Y_test)
+    plt.savefig("./assets/_pca_lenet_conv.svg")
+    plt.cla()
 
-    images2svg("./assets/tsne_lenet_conv.svg", images, tsne(conv1_out).cpu().numpy()).save(pretty=True)
-    images2svg("./assets/tsne_lenet_fc.svg", images, tsne(fc1).cpu().numpy()).save(pretty=True)
-    images2svg("./assets/tsne_lenet_final.svg", images, tsne(final).cpu().numpy()).save(pretty=True)
+    pos = pca(fc1).cpu().numpy()
+    images2svg("./assets/pca_lenet_fc.svg", images, pos).save(pretty=True)
+    plt.scatter(pos[:, 0], pos[:, 1], c = Y_test)
+    plt.savefig("./assets/_pca_lenet_fc.svg")
+    plt.cla()
+
+    pos = pca(final).cpu().numpy()
+    images2svg("./assets/pca_lenet_final.svg", images, pos).save(pretty=True)
+    plt.scatter(pos[:, 0], pos[:, 1], c = Y_test)
+    plt.savefig("./assets/_pca_lenet_final.svg")
+    plt.cla()
+
+    pos = tsne(conv1_out).cpu().numpy()
+    images2svg("./assets/tsne_lenet_conv.svg", images, pos).save(pretty=True)
+    plt.scatter(pos[:, 0], pos[:, 1], c = Y_test)
+    plt.savefig("./assets/_tsne_lenet_conv.svg")
+    plt.cla()
+
+    pos = tsne(fc1).cpu().numpy()
+    images2svg("./assets/tsne_lenet_fc.svg", images, pos).save(pretty=True)
+    plt.scatter(pos[:, 0], pos[:, 1], c = Y_test)
+    plt.savefig("./assets/_tsne_lenet_fc.svg")
+    plt.cla()
+
+    pos = tsne(final).cpu().numpy()
+    images2svg("./assets/tsne_lenet_final.svg", images, pos).save(pretty=True)
+    plt.scatter(pos[:, 0], pos[:, 1], c = Y_test)
+    plt.savefig("./assets/_tsne_lenet_final.svg")
+    plt.cla()
 
     with torch.no_grad():
         conv1_out = mynet.pool(torch.nn.functional.relu(mynet.conv1(X_in)))
@@ -129,10 +159,38 @@ if __name__ == '__main__':
         final = mynet.fc3(fc2)
     conv3_out = torch.flatten(conv3_out, 1)
 
-    images2svg("./assets/pca_mynet_conv.svg", images, pca(conv3_out).cpu().numpy()).save(pretty=True)
-    images2svg("./assets/pca_mynet_fc.svg", images, pca(fc2).cpu().numpy()).save(pretty=True)
-    images2svg("./assets/pca_mynet_final.svg", images, pca(final).cpu().numpy()).save(pretty=True)
+    pos = pca(conv3_out).cpu().numpy()
+    images2svg("./assets/pca_mynet_conv.svg", images, pos).save(pretty=True)
+    plt.scatter(pos[:, 0], pos[:, 1], c = Y_test)
+    plt.savefig("./assets/_pca_mynet_conv.svg")
+    plt.cla()
 
-    images2svg("./assets/tsne_mynet_conv.svg", images, tsne(conv3_out).cpu().numpy()).save(pretty=True)
-    images2svg("./assets/tsne_mynet_fc.svg", images, tsne(fc2).cpu().numpy()).save(pretty=True)
-    images2svg("./assets/tsne_mynet_final.svg", images, tsne(final).cpu().numpy()).save(pretty=True)
+    pos = pca(fc2).cpu().numpy()
+    images2svg("./assets/pca_mynet_fc.svg", images, pos).save(pretty=True)
+    plt.scatter(pos[:, 0], pos[:, 1], c = Y_test)
+    plt.savefig("./assets/_pca_mynet_fc.svg")
+    plt.cla()
+
+    pos = pca(final).cpu().numpy()
+    images2svg("./assets/pca_mynet_final.svg", images, pos).save(pretty=True)
+    plt.scatter(pos[:, 0], pos[:, 1], c = Y_test)
+    plt.savefig("./assets/_pca_mynet_final.svg")
+    plt.cla()
+
+    pos = tsne(conv3_out).cpu().numpy()
+    images2svg("./assets/tsne_mynet_conv.svg", images, pos).save(pretty=True)
+    plt.scatter(pos[:, 0], pos[:, 1], c = Y_test)
+    plt.savefig("./assets/_tsne_mynet_conv.svg")
+    plt.cla()
+
+    pos = tsne(fc2).cpu().numpy()
+    images2svg("./assets/tsne_mynet_fc.svg", images, pos).save(pretty=True)
+    plt.scatter(pos[:, 0], pos[:, 1], c = Y_test)
+    plt.savefig("./assets/_tsne_mynet_fc.svg")
+    plt.cla()
+
+    pos = tsne(final).cpu().numpy()
+    images2svg("./assets/tsne_mynet_final.svg", images, pos).save(pretty=True)
+    plt.scatter(pos[:, 0], pos[:, 1], c = Y_test)
+    plt.savefig("./assets/_tsne_mynet_final.svg")
+    plt.cla()
