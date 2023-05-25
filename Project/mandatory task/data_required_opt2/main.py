@@ -7,7 +7,7 @@ import torch.utils.data
 from cnns import callback, LeNet, MyNet, train_and_test
 
 from matplotlib import pyplot as plt
-
+plt.style.use('ggplot')
 
 
 if __name__ == '__main__':
@@ -42,24 +42,38 @@ if __name__ == '__main__':
     torch.save(lenet, 'lenet.pth')
     torch.save(mynet, 'mynet.pth')
 
-    plt.figure()
-    plt.title('le')
-    plt.plot(le_loss_cb['train'])
-    plt.plot(le_loss_cb['test'])
+    plt.title('loss of lenet')
+    plt.plot(le_loss_cb['train'], label = 'train')
+    plt.plot(le_loss_cb['test'], label = 'test')
+    plt.legend()
+    plt.xlabel('epoch')
+    plt.ylabel('loss')
+    plt.savefig('./assets/lenet_loss.svg')
+    plt.cla()
 
-    plt.figure()
-    plt.title('le')
-    plt.plot(le_acc_cb['train'])
-    plt.plot(le_acc_cb['test'])
+    plt.title('accuracy of lenet')
+    plt.plot(le_acc_cb['train'], label = 'train')
+    plt.plot(le_acc_cb['test'], label = 'test')
+    plt.legend()
+    plt.xlabel('epoch')
+    plt.ylabel('accuracy')
+    plt.savefig('./assets/lenet_acc.svg')
+    plt.cla()
 
-    plt.figure()
-    plt.title('my')
-    plt.plot(my_loss_cb['train'])
-    plt.plot(my_loss_cb['test'])
+    plt.title('loss of mynet')
+    plt.plot(my_loss_cb['train'], label = 'train')
+    plt.plot(my_loss_cb['test'], label = 'test')
+    plt.legend()
+    plt.xlabel('epoch')
+    plt.ylabel('loss')
+    plt.savefig('./assets/mynet_loss.svg')
+    plt.cla()
 
-    plt.figure()
-    plt.title('my')
-    plt.plot(my_acc_cb['train'])
-    plt.plot(my_acc_cb['test'])
-
-    plt.show()
+    plt.title('accuracy of mynet')
+    plt.plot(my_acc_cb['train'], label = 'train')
+    plt.plot(my_acc_cb['test'], label = 'test')
+    plt.legend()
+    plt.xlabel('epoch')
+    plt.ylabel('accuracy')
+    plt.savefig('./assets/mynet_acc.svg')
+    plt.cla()
