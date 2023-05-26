@@ -30,15 +30,16 @@ class GradCAM:
         return heatmap.numpy()
     
 def apply_heatmap(img: np.ndarray, heatmap: np.ndarray, *, heatmap_ratio: float = 0.6):
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     heatmap = cv2.applyColorMap(np.uint8(255 * cv2.resize(heatmap, img.shape[:2])), cv2.COLORMAP_JET)
-    return cv2.cvtColor(np.uint8(heatmap * heatmap_ratio + img * (1 - heatmap_ratio)), cv2.COLOR_BGR2RGB)
+    return np.uint8(heatmap * heatmap_ratio + img * (1 - heatmap_ratio))
     
 
 if __name__ == '__main__':
     model = torchvision.models.resnet34()
     model.load_state_dict(torch.load('./resnet34-b627a593.pth'))
     model.eval()
+    model2 = torchvision.models.vgg19(weights = torchvision.models.VGG19_Weights.IMAGENET1K_V1)
+    model2.eval()
     
     transform = torchvision.transforms.Compose([
         torchvision.transforms.ToTensor(),
@@ -47,15 +48,15 @@ if __name__ == '__main__':
         torchvision.transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
 
-    image = Image.open('./cat_dog.png')
+    image = Image.open('./assets/cat_dog.png')
     input_tensor = transform(image)
     tiger_cat_label = 282
     boxer_label = 242
 
-    gradcam = GradCAM(model, model.layer4[-1].conv2)
+    gradcam = GradCAM(model, model.layer4[2].conv2)
+    gradcam2 = GradCAM(model2, model2.features[34])
 
-    plt.figure()
-    plt.imshow(apply_heatmap(np.array(image), gradcam(input_tensor, boxer_label)))
-    plt.figure()
-    plt.imshow(apply_heatmap(np.array(image), gradcam(input_tensor, tiger_cat_label)))
-    plt.show()
+    cv2.imwrite('./assets/gradcam_resnet34_boxer.png', apply_heatmap(np.array(image), gradcam(input_tensor, boxer_label)))
+    cv2.imwrite('./assets/gradcam_resnet34_cat.png', apply_heatmap(np.array(image), gradcam(input_tensor, tiger_cat_label)))
+    cv2.imwrite('./assets/gradcam_vgg19_boxer.png', apply_heatmap(np.array(image), gradcam2(input_tensor, boxer_label)))
+    cv2.imwrite('./assets/gradcam_vgg19_cat.png', apply_heatmap(np.array(image), gradcam2(input_tensor, tiger_cat_label)))
