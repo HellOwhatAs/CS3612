@@ -1,6 +1,5 @@
 import torch, torchvision
 import numpy as np, cv2
-import matplotlib.pyplot as plt
 from PIL import Image
 
 class GradCAM:
@@ -50,8 +49,7 @@ if __name__ == '__main__':
 
     image = Image.open('./assets/cat_dog.png')
     input_tensor = transform(image)
-    tiger_cat_label = 282
-    boxer_label = 242
+    boxer_label, tiger_cat_label = 242, 282 # http://befree2008.github.io/2018/10/05/20181005_ImageNet1000分类名称和编号
 
     gradcam = GradCAM(model, model.layer4[2].conv2)
     gradcam2 = GradCAM(model2, model2.features[34])
