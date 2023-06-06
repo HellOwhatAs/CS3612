@@ -21,8 +21,8 @@ class GradCAM:
 
         activation = self.activation.squeeze(0)
         weighted_activation = torch.zeros(activation.shape)
-        for idx, (weight, activation) in enumerate(zip(torch.mean(self.gradient, [0, 2, 3]), activation)):
-            weighted_activation[idx] = weight * activation
+        for idx, wa in enumerate(w * a for w, a in zip(torch.mean(self.gradient, [0, 2, 3]), activation)):
+            weighted_activation[idx] = wa
 
         heatmap = torch.maximum(torch.mean(weighted_activation, 0).detach().cpu(), torch.tensor(0))
         heatmap /= torch.max(heatmap) + 1e-10
