@@ -1,0 +1,8 @@
+opencv-python
+matplotlib
+Pillow
+numpy
+svgwrite==1.4.3
+torch
+torchvision
+tqdm

@@ -1,5 +1,10 @@
 # CS3612-Project
 
+## Requirements
+```text
+python -m pip install -r requirements.txt
+```
+
 ## Mandatory Task
 
 ```text
