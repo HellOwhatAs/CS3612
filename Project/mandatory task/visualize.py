@@ -63,11 +63,10 @@ def calc_prob(X: torch.Tensor, eps: float = 1e-5, perplexity: float = 30.0, max_
         ret[i, [j for j in range(n) if j != i]] = P
     return ret
 
-def tsne(X: torch.Tensor, num_dims: int = 2, *, initial_dims: int = 50, max_iter: int = 1000, perplexity: float = 20.0,
+def tsne(X: torch.Tensor, num_dims: int = 2, *, max_iter: int = 1000, perplexity: float = 20.0,
         eps: float = 1e-5, gain_min: float = 0.01, float_min: float = 1e-12):
     device = X.device
     n = X.shape[0]
-    X = pca(X, initial_dims)
     ret = torch.randn(n, num_dims).to(device)
     dY, iY = torch.zeros(n, num_dims).to(device), torch.zeros(n, num_dims).to(device)
     gains = torch.ones(n, num_dims).to(device)
