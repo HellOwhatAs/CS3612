@@ -15,8 +15,8 @@ def images2svg(svg_filename: str, images: np.ndarray, pos: np.ndarray, *, width_
         dwg.add(
             dwg.image(
                 'data:image/png;base64,' + base64.b64encode(cv2.imencode('.png', np.uint8(image))[1]).decode('utf-8'),
-                insert = (f"{x * (1 - imsize) * 100}%", f"{(1 - y) * (1 - imsize) * 100}%"),
-                size = (f"{imsize * 100}%", ) * 2
+                insert = (f"{x * (1 - imsize) * width_pixels}", f"{(1 - y) * (1 - imsize) * height_pixels}"),
+                size = (f"{imsize * min(width_pixels, height_pixels)}", ) * 2
             )
         )
     return dwg
