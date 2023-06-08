@@ -50,13 +50,13 @@ if __name__ == "__main__":
     output = ig.attribute(input_tensor.unsqueeze(0))
     output = output.squeeze(0).abs()
     output /= output.max()
-    mask = np.sum(output.permute(1, 2, 0).abs().cpu().numpy(), 2)[:,:,np.newaxis] + 0.1
+    mask = np.sum(output.permute(1, 2, 0).cpu().numpy(), 2)[:,:,np.newaxis] + 0.1
     cv2.imwrite('./assets/integrated_gradients_resnet34_fireboat.png', np.uint8(mask * image_np))
 
     output = ig.attribute(input_tensor2.unsqueeze(0))
     output = output.squeeze(0).abs()
     output /= output.max()
-    mask = np.sum(output.permute(1, 2, 0).abs().cpu().numpy(), 2)[:,:,np.newaxis] + 0.1
+    mask = np.sum(output.permute(1, 2, 0).cpu().numpy(), 2)[:,:,np.newaxis] + 0.1
     cv2.imwrite('./assets/integrated_gradients_resnet34_viaduct.png', np.uint8(mask * image2_np))
 
     ig2 = IntegratedGradients(model2)
@@ -64,11 +64,11 @@ if __name__ == "__main__":
     output = ig2.attribute(input_tensor.unsqueeze(0))
     output = output.squeeze(0).abs()
     output /= output.max()
-    mask = np.sum(output.permute(1, 2, 0).abs().cpu().numpy(), 2)[:,:,np.newaxis] + 0.1
+    mask = np.sum(output.permute(1, 2, 0).cpu().numpy(), 2)[:,:,np.newaxis] + 0.1
     cv2.imwrite('./assets/integrated_gradients_vgg19_fireboat.png', np.uint8(mask * image_np))
 
     output = ig2.attribute(input_tensor2.unsqueeze(0))
     output = output.squeeze(0).abs()
     output /= output.max()
-    mask = np.sum(output.permute(1, 2, 0).abs().cpu().numpy(), 2)[:,:,np.newaxis] + 0.1
+    mask = np.sum(output.permute(1, 2, 0).cpu().numpy(), 2)[:,:,np.newaxis] + 0.1
     cv2.imwrite('./assets/integrated_gradients_vgg19_viaduct.png', np.uint8(mask * image2_np))
