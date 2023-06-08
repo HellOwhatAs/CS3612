@@ -16,7 +16,7 @@ class IntegratedGradients:
         for i in tqdm(range(n_steps), f'IntegratedGradients(target = {target})'):
             x = baselines + (i + 1) / n_steps * (input_tensor - baselines)
             x.requires_grad_()
-            output = model(x)[0, target]
+            output = self.model(x)[0, target]
             grad = torch.autograd.grad(output, x)[0]
             mean_grad += grad / n_steps
         return (input_tensor - baselines) * mean_grad
