@@ -39,21 +39,21 @@ python integrated_gradients.py
 ```
 
 ## Report
-![](assets/report0.svg)
-![](assets/report1.svg) 
-![](assets/report2.svg) 
-![](assets/report3.svg) 
-![](assets/report4.svg) 
-![](assets/report5.svg) 
-![](assets/report6.svg) 
-![](assets/report7.svg) 
-![](assets/report8.svg) 
-![](assets/report9.svg) 
-![](assets/report10.svg)
-![](assets/report11.svg)
-![](assets/report12.svg)
-![](assets/report13.svg)
-![](assets/report14.svg)
-![](assets/report15.svg)
-![](assets/report16.svg)
-![](assets/report17.svg)
+<img src="assets/report0.svg" style="width:100%"/>
+<img src="assets/report1.svg" style="width:100%"/>
+<img src="assets/report2.svg" style="width:100%"/>
+<img src="assets/report3.svg" style="width:100%"/>
+<img src="assets/report4.svg" style="width:100%"/>
+<img src="assets/report5.svg" style="width:100%"/>
+<img src="assets/report6.svg" style="width:100%"/>
+<img src="assets/report7.svg" style="width:100%"/>
+<img src="assets/report8.svg" style="width:100%"/>
+<img src="assets/report9.svg" style="width:100%"/>
+<img src="assets/report10.svg" style="width:100%"/>
+<img src="assets/report11.svg" style="width:100%"/>
+<img src="assets/report12.svg" style="width:100%"/>
+<img src="assets/report13.svg" style="width:100%"/>
+<img src="assets/report14.svg" style="width:100%"/>
+<img src="assets/report15.svg" style="width:100%"/>
+<img src="assets/report16.svg" style="width:100%"/>
+<img src="assets/report17.svg" style="width:100%"/>
